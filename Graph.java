@@ -1,9 +1,5 @@
-import java.util.ArrayList;
-import java.util.Queue; 
-import java.util.LinkedList;
-
-
-public final class Graph {
+import java.util.*;
+public class Graph {
     public static class Edge {
         int u;
         int v;
@@ -22,11 +18,9 @@ public final class Graph {
         public static void dfsHelper(ArrayList<ArrayList<Integer>> adj, boolean[] vis, ArrayList<Integer> ans , int node) {
             vis[node] = true;
             ans.add(node);
-            for(int i=0;i<adj.get(node).size();i++) {
-                for(int curr : adj.get(node)) {
-                    if(!vis[curr]) {
-                        dfsHelper(adj, vis, ans, curr);
-                    }
+            for(int curr : adj.get(node)) {
+                if(!vis[curr]) {
+                    dfsHelper(adj, vis, ans, curr);
                 }
             }
         }
@@ -34,13 +28,14 @@ public final class Graph {
         public static void bfsHelper(ArrayList<ArrayList<Integer>> adj, boolean[] vis, ArrayList<Integer> ans , int source) {
             Queue<Integer> q = new LinkedList<>();
             q.add(source);
+            vis[source] = true;
             while(!q.isEmpty()) {
                 int node = q.remove();
-                vis[node] = true;
                 ans.add(node);
                 for(int i=0;i<adj.get(node).size();i++) {
                     int curr = adj.get(node).get(i);
                     if(!vis[curr]) {
+                        vis[curr] = true;
                         q.add(curr);
                     }
                 }
@@ -126,7 +121,11 @@ public final class Graph {
         public ArrayList<Integer> dfs(int source) { // RETURNS DFS TRAVERSAL
             ArrayList<Integer> ans = new ArrayList<>();
             this.vis = new boolean[nodes];
-            Helper.dfsHelper(adj,vis,ans,source);
+            for(int i=0;i<vis.length;i++) {
+                if(!vis[i]) {
+                    Helper.dfsHelper(adj,vis,ans,i);
+                }
+            }
             return ans;
         }
 
@@ -136,7 +135,11 @@ public final class Graph {
             for (int i = 0; i < vis.length; i++) {
                 vis[i] = false;
             }
-            Helper.bfsHelper(adj,vis,ans,source);
+            for(int i=0;i<vis.length;i++) {
+                if(!vis[i]) {
+                    Helper.bfsHelper(adj,vis,ans,i);
+                }
+            }
             return ans;
         }
 
@@ -187,10 +190,3 @@ public final class Graph {
         // System.out.println(graph.adj.get(0).get(0));
     }
 }
-
-// Dijkstra’s Algorithm for shortest paths in weighted graphs.
-// Bellman-Ford Algorithm for graphs with negative weights.
-// Floyd-Warshall Algorithm for all-pairs shortest paths.
-// Tarjan’s Algorithm for finding strongly connected components.
-// Minimum Spanning Tree algorithms like Kruskal’s and Prim’s.
-
