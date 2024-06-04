@@ -1,6 +1,7 @@
-package InBuiltGraph;
+import java.util.ArrayList;
+import java.util.Queue; 
+import java.util.LinkedList;
 
-import java.util.ArrayList; 
 
 public class Graph {
     public static class Edge {
@@ -25,6 +26,22 @@ public class Graph {
                 for(int curr : adj.get(node)) {
                     if(!vis[curr]) {
                         dfsHelper(adj, vis, ans, curr);
+                    }
+                }
+            }
+        }
+
+        public static void bfsHelper(ArrayList<ArrayList<Integer>> adj, boolean[] vis, ArrayList<Integer> ans , int source) {
+            Queue<Integer> q = new LinkedList<>();
+            q.add(source);
+            while(!q.isEmpty()) {
+                int node = q.remove();
+                vis[node] = true;
+                ans.add(node);
+                for(int i=0;i<adj.get(node).size();i++) {
+                    int curr = adj.get(node).get(i);
+                    if(!vis[curr]) {
+                        q.add(curr);
                     }
                 }
             }
@@ -89,12 +106,13 @@ public class Graph {
             nodes = this.adj.size();
         }
         public int shortestPath(int src, int dest, boolean isNegativeWeighted) {
-            if(isNegativeWeighted) {
-                return bellManFord();
-            }
-            else {
-                return dijkstras();
-            }
+            // if(isNegativeWeighted) {
+            //     return bellManFord();
+            // }
+            // else {
+            //     return dijkstras();
+            // }
+            return -1;
         }
 
         public boolean isCycle() { // CHECK IF THERE EXISTS A CYCLE
@@ -112,8 +130,13 @@ public class Graph {
             return ans;
         }
 
-        public ArrayList<Integer> bfs() { // RETURNS BFS TRAVERSAL
+        public ArrayList<Integer> bfs(int source) { // RETURNS BFS TRAVERSAL
             ArrayList<Integer> ans = new ArrayList<>();
+            this.vis = new boolean[nodes];
+            for (int i = 0; i < vis.length; i++) {
+                vis[i] = false;
+            }
+            Helper.bfsHelper(adj,vis,ans,source);
             return ans;
         }
 
@@ -152,7 +175,7 @@ public class Graph {
         edges.add(new Edge(5, 6));
         Graph graph = new Graph(edges, 7, true);
 
-        System.out.println(graph.dfs(0));
+        System.out.println(graph.bfs(0));
         // System.out.println(graph.adj.get(0).get(0));
         // System.out.println(graph.nodes);
         // graph.add(7,6,true);
