@@ -2,8 +2,7 @@ package InBuiltGraph;
 
 import java.util.ArrayList; 
 
-public class inbuiltgraph {
-    static class Graph {
+public class Graph {
         ArrayList<ArrayList<Integer>> adj;
         int[][] matrix;
         int nodes;
@@ -109,7 +108,7 @@ public class inbuiltgraph {
         public int components() { // RETURNS NUMBER OF COMPONENTS IN THE GRAPH
             return -1;
         }
-    }
+    
     static class Edge {
         int u;
         int v;
