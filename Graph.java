@@ -3,16 +3,44 @@ package InBuiltGraph;
 import java.util.ArrayList; 
 
 public class Graph {
+    public static class Edge {
+        int u;
+        int v;
+        int wt = 1;
+        public Edge(int u, int v) {
+            this.u = u;
+            this.v = v;
+        }
+        public Edge(int u, int v, int wt) {
+            this.u = u;
+            this.v = v;
+            this.wt = wt;
+        }
+    }
+    public static class Helper {
+        public static void dfsHelper(ArrayList<ArrayList<Integer>> adj, boolean[] vis, ArrayList<Integer> ans , int node) {
+            vis[node] = true;
+            ans.add(node);
+            for(int i=0;i<adj.get(node).size();i++) {
+                for(int curr : adj.get(node)) {
+                    if(!vis[curr]) {
+                        dfsHelper(adj, vis, ans, curr);
+                    }
+                }
+            }
+        }
+    }
         ArrayList<ArrayList<Integer>> adj;
         int[][] matrix;
         int nodes;
+        boolean[] vis;
         public Graph() {
             this.adj = new ArrayList<>();
             this.nodes = 0;
         }
         public Graph(ArrayList<Edge> edges, int nodes, boolean isUndirected) {
             this.nodes = nodes;
-            adj = new ArrayList<>(nodes);
+            this.adj = new ArrayList<>(nodes);
             for(int i=0;i<nodes;i++) {
                 this.adj.add(new ArrayList<>());
             }
@@ -77,8 +105,10 @@ public class Graph {
             return false;
         }
 
-        public ArrayList<Integer> dfs() { // RETURNS DFS TRAVERSAL
+        public ArrayList<Integer> dfs(int source) { // RETURNS DFS TRAVERSAL
             ArrayList<Integer> ans = new ArrayList<>();
+            this.vis = new boolean[nodes];
+            Helper.dfsHelper(adj,vis,ans,source);
             return ans;
         }
 
@@ -110,42 +140,28 @@ public class Graph {
             return -1;
         }
     
-    static class Edge {
-        int u;
-        int v;
-        int wt = 1;
-        public Edge(int u, int v) {
-            this.u = u;
-            this.v = v;
-        }
-        public Edge(int u, int v, int wt) {
-            this.u = u;
-            this.v = v;
-            this.wt = wt;
-        }
-    }
     public static void main(String[] args) {
-        // ArrayList<Edge> edges = new ArrayList<Edge>();
-        // edges.add(new Edge(0, 1));
-        // edges.add(new Edge(0, 2));
-        // edges.add(new Edge(1, 2));
-        // edges.add(new Edge(1, 3));
-        // edges.add(new Edge(2, 4));
-        // edges.add(new Edge(3, 5));
-        // edges.add(new Edge(4, 5));
-        // edges.add(new Edge(5, 6));
+        ArrayList<Edge> edges = new ArrayList<Edge>();
+        edges.add(new Edge(0, 1));
+        edges.add(new Edge(0, 2));
+        edges.add(new Edge(1, 2));
+        edges.add(new Edge(1, 3));
+        edges.add(new Edge(2, 4));
+        edges.add(new Edge(3, 5));
+        edges.add(new Edge(4, 5));
+        edges.add(new Edge(5, 6));
+        Graph graph = new Graph(edges, 7, true);
 
-        // Graph graph = new Graph(edges, 7, true);
-        
+        System.out.println(graph.dfs(0));
         // System.out.println(graph.adj.get(0).get(0));
         // System.out.println(graph.nodes);
         // graph.add(7,6,true);
         // System.out.println(graph.adj.get(7).get(0));
         // System.out.println(graph.nodes);
 
-        Graph graph = new Graph();
-        graph.add(0, 2, false);
-        System.out.println(graph.adj.get(0).get(0));
+        // Graph graph = new Graph();
+        // graph.add(0, 2, false);
+        // System.out.println(graph.adj.get(0).get(0));
     }
 }
 
