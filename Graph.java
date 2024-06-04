@@ -7,7 +7,8 @@ public class Graph {
         int[][] matrix;
         int nodes;
         public Graph() {
-
+            this.adj = new ArrayList<>();
+            this.nodes = 0;
         }
         public Graph(ArrayList<Edge> edges, int nodes, boolean isUndirected) {
             this.nodes = nodes;
@@ -124,23 +125,27 @@ public class Graph {
         }
     }
     public static void main(String[] args) {
-        ArrayList<Edge> edges = new ArrayList<Edge>();
-        edges.add(new Edge(0, 1));
-        edges.add(new Edge(0, 2));
-        edges.add(new Edge(1, 2));
-        edges.add(new Edge(1, 3));
-        edges.add(new Edge(2, 4));
-        edges.add(new Edge(3, 5));
-        edges.add(new Edge(4, 5));
-        edges.add(new Edge(5, 6));
+        // ArrayList<Edge> edges = new ArrayList<Edge>();
+        // edges.add(new Edge(0, 1));
+        // edges.add(new Edge(0, 2));
+        // edges.add(new Edge(1, 2));
+        // edges.add(new Edge(1, 3));
+        // edges.add(new Edge(2, 4));
+        // edges.add(new Edge(3, 5));
+        // edges.add(new Edge(4, 5));
+        // edges.add(new Edge(5, 6));
 
-        Graph graph = new Graph(edges, 7, true);
+        // Graph graph = new Graph(edges, 7, true);
         
+        // System.out.println(graph.adj.get(0).get(0));
+        // System.out.println(graph.nodes);
+        // graph.add(7,6,true);
+        // System.out.println(graph.adj.get(7).get(0));
+        // System.out.println(graph.nodes);
+
+        Graph graph = new Graph();
+        graph.add(0, 2, false);
         System.out.println(graph.adj.get(0).get(0));
-        System.out.println(graph.nodes);
-        graph.add(7,6,true);
-        System.out.println(graph.adj.get(7).get(0));
-        System.out.println(graph.nodes);
     }
 }
 
