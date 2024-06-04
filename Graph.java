@@ -163,7 +163,16 @@ public class Graph {
             return ans;
         }
         public int components() { // RETURNS NUMBER OF COMPONENTS IN THE GRAPH
-            return -1;
+            ArrayList<Integer> temp = new ArrayList<>();
+            int ans = 0;
+            this.vis = new boolean[nodes];
+            for(int i=0;i<vis.length;i++) {
+                if(!vis[i]) {
+                    ans++;
+                    Helper.dfsHelper(adj,vis,temp,i);
+                }
+            }
+            return ans;
         }
     
     public static void main(String[] args) {
