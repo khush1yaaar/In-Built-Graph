@@ -3,7 +3,7 @@ import java.util.Queue;
 import java.util.LinkedList;
 
 
-public class Graph {
+public final class Graph {
     public static class Edge {
         int u;
         int v;
