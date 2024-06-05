@@ -1,47 +1,5 @@
 import java.util.*;
 public class Graph {
-    public static class Edge {
-        int u;
-        int v;
-        int wt = 1;
-        public Edge(int u, int v) {
-            this.u = u;
-            this.v = v;
-        }
-        public Edge(int u, int v, int wt) {
-            this.u = u;
-            this.v = v;
-            this.wt = wt;
-        }
-    }
-    public static class Helper {
-        public static void dfsHelper(ArrayList<ArrayList<Integer>> adj, boolean[] vis, ArrayList<Integer> ans , int node) {
-            vis[node] = true;
-            ans.add(node);
-            for(int curr : adj.get(node)) {
-                if(!vis[curr]) {
-                    dfsHelper(adj, vis, ans, curr);
-                }
-            }
-        }
-
-        public static void bfsHelper(ArrayList<ArrayList<Integer>> adj, boolean[] vis, ArrayList<Integer> ans , int source) {
-            Queue<Integer> q = new LinkedList<>();
-            q.add(source);
-            vis[source] = true;
-            while(!q.isEmpty()) {
-                int node = q.remove();
-                ans.add(node);
-                for(int i=0;i<adj.get(node).size();i++) {
-                    int curr = adj.get(node).get(i);
-                    if(!vis[curr]) {
-                        vis[curr] = true;
-                        q.add(curr);
-                    }
-                }
-            }
-        }
-    }
         ArrayList<ArrayList<Integer>> adj;
         int[][] matrix;
         int nodes;
@@ -110,7 +68,27 @@ public class Graph {
             return -1;
         }
 
-        public boolean isCycle() { // CHECK IF THERE EXISTS A CYCLE
+        public boolean isCycle(boolean isUndirected) { // CHECK IF THERE EXISTS A CYCLE
+            boolean[] path = new boolean[nodes];
+            vis = new boolean[nodes];
+            if(isUndirected) {
+                for(int i=0;i<vis.length;i++) {
+                    if(!vis[i]) {
+                        if(Helper.isCycleHelper1(adj, vis, i)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+            else{
+                for(int i=0;i<vis.length;i++) {
+                    if(!vis[i]) {
+                        if(Helper.isCycleHelper2(adj, vis, path, i)) {
+                            return true;
+                        }
+                    }
+                }
+            }
             return false;
         }
 
@@ -197,5 +175,99 @@ public class Graph {
         // Graph graph = new Graph();
         // graph.add(0, 2, false);
         // System.out.println(graph.adj.get(0).get(0));
+    }
+    public static class Edge {
+        int u;
+        int v;
+        int wt = 1;
+        public Edge(int u, int v) {
+            this.u = u;
+            this.v = v;
+        }
+        public Edge(int u, int v, int wt) {
+            this.u = u;
+            this.v = v;
+            this.wt = wt;
+        }
+    }
+
+    public static class Pair {
+        int first;
+        int second;
+
+        Pair(int first, int second) {
+            this.first = first;
+            this.second = second;
+        }
+    }
+    public static class Helper {
+        public static void dfsHelper(ArrayList<ArrayList<Integer>> adj, boolean[] vis, ArrayList<Integer> ans , int node) {
+            vis[node] = true;
+            ans.add(node);
+            for(int curr : adj.get(node)) {
+                if(!vis[curr]) {
+                    dfsHelper(adj, vis, ans, curr);
+                }
+            }
+        }
+
+        public static void bfsHelper(ArrayList<ArrayList<Integer>> adj, boolean[] vis, ArrayList<Integer> ans , int source) {
+            Queue<Integer> q = new LinkedList<>();
+            q.add(source);
+            vis[source] = true;
+            while(!q.isEmpty()) {
+                int node = q.remove();
+                ans.add(node);
+                for(int i=0;i<adj.get(node).size();i++) {
+                    int curr = adj.get(node).get(i);
+                    if(!vis[curr]) {
+                        vis[curr] = true;
+                        q.add(curr);
+                    }
+                }
+            }
+        }
+
+        public static boolean isCycleHelper1(ArrayList<ArrayList<Integer>> adj, boolean[] vis, int node) {
+            //  UNDIRECTED
+            vis[node] = true;
+            Queue<Pair> q = new LinkedList<>();
+            q.add(new Pair(node, -1));
+
+            while(!q.isEmpty()) {
+                int curr = q.peek().first;
+                int parent = q.peek().second;
+                q.remove();
+
+                for(int neigh : adj.get(curr)) {
+                    if(!vis[neigh]) {
+                        vis[neigh] = true;
+                        q.add(new Pair(neigh,curr));
+                    }
+                    else if(neigh != parent) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        public static boolean isCycleHelper2(ArrayList<ArrayList<Integer>> adj, boolean[] vis,  boolean[] path, int node) {
+            vis[node] = true;
+            path[node] = true;
+
+            for(int curr : adj.get(node)) {
+                if(!vis[curr]) {
+                    if(isCycleHelper2(adj, vis, path, curr)) {
+                        return true;
+                    }
+                }
+                else if(path[curr]) {
+                    return true;
+                }
+            }
+            path[node] = false;
+            return false;
+        }
     }
 }
