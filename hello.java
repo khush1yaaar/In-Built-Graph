@@ -23,8 +23,8 @@ public class hello {
         graph2.add(5, 6,1,true);
         //graph2.add(0, 1, 2, false);
         //System.out.println(graph2.adjW.get(0).get(0).dest);
-        ArrayList<Edge> edges = new ArrayList<Edge>();
 
+        ArrayList<Edge> edges = new ArrayList<Edge>();
         edges.add(new Edge(0, 1,1));
         edges.add(new Edge(0, 2,4));
         edges.add(new Edge(1, 2,5));
@@ -47,6 +47,6 @@ public class hello {
         edges.add(new Edge(5, 6));
         Graph graph4 = new Graph(edges2, 7, true);
 
-        System.out.println(graph4.bfs(0));
+        System.out.println(graph.isCycle(false));
     }
 }

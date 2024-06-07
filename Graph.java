@@ -136,8 +136,22 @@ public class Graph {
             return ans;
         }
 
-        public ArrayList<Integer> topo() { // RETURN TOPO SORT
+        public ArrayList<Integer> topoSort(boolean isUndirected) { // RETURN TOPO SORT
+            if(isUndirected || isCycle(isUndirected)) {
+                System.out.println("Not Possible");
+                return new ArrayList<>();
+            }
             ArrayList<Integer> ans = new ArrayList<>();
+            this.vis = new boolean[nodes];
+            Stack<Integer> st = new Stack<Integer>();
+            for (int i = 0; i < vis.length; i++) {
+                if (!vis[i]) {
+                    Helper.topoSortHelper(i, vis, st, adj);
+                }
+            }
+            while (!st.isEmpty()) {
+                ans.add(st.pop());
+            }
             return ans;
         }
 
@@ -202,6 +216,17 @@ public class Graph {
         }
     }
     public static class Helper {
+        public static void topoSortHelper(int node, boolean vis[], Stack<Integer> st,
+            ArrayList<ArrayList<Pair>> adj) {
+            vis[node] = true;
+            for (Pair curr : adj.get(node)) {
+                int it = curr.dest;
+                if (!vis[it]) {
+                    topoSortHelper(it, vis, st, adj);
+                }
+            }
+            st.push(node);
+        }
         public static int dijkstra(ArrayList<ArrayList<Pair>> adj, int nodes, int src, int dest) {
             PriorityQueue<Pair> pq = new PriorityQueue<>(Comparator.comparingInt(a -> a.wt));
             int[] dist = new int[nodes];
