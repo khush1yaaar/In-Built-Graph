@@ -205,162 +205,6 @@ public class Graph {
         // graph.add(0, 2, false);
         // System.out.println(graph.adj.get(0).get(0));
     }
-
-    public static class Pair {
-        int dest;
-        int wt = 1;
-
-        Pair(int dest, int wt) {
-            this.dest = dest;
-            this.wt = wt;
-        }
-    }
-    public static class Helper {
-        public static void topoSortHelper(int node, boolean vis[], Stack<Integer> st,
-            ArrayList<ArrayList<Pair>> adj) {
-            vis[node] = true;
-            for (Pair curr : adj.get(node)) {
-                int it = curr.dest;
-                if (!vis[it]) {
-                    topoSortHelper(it, vis, st, adj);
-                }
-            }
-            st.push(node);
-        }
-        public static int dijkstra(ArrayList<ArrayList<Pair>> adj, int nodes, int src, int dest) {
-            PriorityQueue<Pair> pq = new PriorityQueue<>(Comparator.comparingInt(a -> a.wt));
-            int[] dist = new int[nodes];
-            Arrays.fill(dist, Integer.MAX_VALUE);
-            dist[src] = 0;
-            pq.add(new Pair(src, 0));
-
-            while (!pq.isEmpty()) {
-                Pair curr = pq.poll();
-                int u = curr.dest;
-
-                if (u == dest) {
-                    return dist[u];
-                }
-
-                for (Pair neighbor : adj.get(u)) {
-                    int v = neighbor.dest;
-                    int weight = neighbor.wt;
-
-                    if (dist[u] + weight < dist[v]) {
-                        dist[v] = dist[u] + weight;
-                        pq.add(new Pair(v, dist[v]));
-                    }
-                }
-            }
-            return dist[dest] == Integer.MAX_VALUE ? -1 : dist[dest];
-        }
-
-        public static int bellmanFord(ArrayList<ArrayList<Pair>> adj, int nodes, int src, int dest) {
-            int[] dist = new int[nodes];
-            Arrays.fill(dist, Integer.MAX_VALUE);
-            dist[src] = 0;
-
-            for (int i = 0; i < nodes - 1; i++) {
-                for (int u = 0; u < nodes; u++) {
-                    for (Pair neighbor : adj.get(u)) {
-                        int v = neighbor.dest;
-                        int weight = neighbor.wt;
-
-                        if (dist[u] != Integer.MAX_VALUE && dist[u] + weight < dist[v]) {
-                            dist[v] = dist[u] + weight;
-                        }
-                    }
-                }
-            }
-
-            for (int u = 0; u < nodes; u++) {
-                for (Pair neighbor : adj.get(u)) {
-                    int v = neighbor.dest;
-                    int weight = neighbor.wt;
-
-                    if (dist[u] != Integer.MAX_VALUE && dist[u] + weight < dist[v]) {
-                        System.out.println("Graph contains negative weight cycle");
-                        return -1;
-                    }
-                }
-            }
-
-            return dist[dest] == Integer.MAX_VALUE ? -1 : dist[dest];
-        }
-
-        public static void dfsHelper(ArrayList<ArrayList<Pair>> adj, boolean[] vis, ArrayList<Integer> ans , int node) {
-            vis[node] = true;
-            ans.add(node);
-            for(Pair curr : adj.get(node)) {
-                int neigh = curr.dest;
-                if(!vis[neigh]) {
-                    dfsHelper(adj, vis, ans, neigh);
-                }
-            }
-        }
-        
-        public static void bfsHelper(ArrayList<ArrayList<Pair>> adj, boolean[] vis, ArrayList<Integer> ans , int source) {
-            Queue<Integer> q = new LinkedList<>();
-            q.add(source);
-            vis[source] = true;
-            while(!q.isEmpty()) {
-                int node = q.remove();
-                ans.add(node);
-                for(int i=0;i<adj.get(node).size();i++) {
-                    Pair curr = adj.get(node).get(i);
-                    int neigh = curr.dest;
-                    if(!vis[neigh]) {
-                        vis[neigh] = true;
-                        q.add(neigh);
-                    }
-                }
-            }
-        }
-
-        public static boolean isCycleHelper1(ArrayList<ArrayList<Pair>> adj, boolean[] vis, int node) {
-            //  UNDIRECTED
-            vis[node] = true;
-            Queue<Pair> q = new LinkedList<>();
-            q.add(new Pair(node, -1));
-
-            while(!q.isEmpty()) {
-                int curr = q.peek().dest;
-                int parent = q.peek().wt;
-                q.remove();
-
-                for(Pair neigh : adj.get(curr)) {
-                    int adjN = neigh.dest;
-                    if(!vis[adjN]) {
-                        vis[adjN] = true;
-                        q.add(new Pair(adjN,curr));
-                    }
-                    else if(adjN != parent) {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
-
-        public static boolean isCycleHelper2(ArrayList<ArrayList<Pair>> adj, boolean[] vis,  boolean[] path, int node) {
-            vis[node] = true;
-            path[node] = true;
-
-            for(Pair curr : adj.get(node)) {
-                int neigh = curr.dest;
-                if(!vis[neigh]) {
-                    if(isCycleHelper2(adj, vis, path, neigh)) {
-                        return true;
-                    }
-                }
-                else if(path[neigh]) {
-                    return true;
-                }
-            }
-            path[node] = false;
-            return false;
-        }
-    }
 }
 class Edge {
     int u;
@@ -374,5 +218,162 @@ class Edge {
         this.u = u;
         this.v = v;
         this.wt = wt;
+    }
+}
+
+class Pair {
+    int dest;
+    int wt = 1;
+
+    Pair(int dest, int wt) {
+        this.dest = dest;
+        this.wt = wt;
+    }
+}
+
+class Helper {
+    public static void topoSortHelper(int node, boolean vis[], Stack<Integer> st,
+        ArrayList<ArrayList<Pair>> adj) {
+        vis[node] = true;
+        for (Pair curr : adj.get(node)) {
+            int it = curr.dest;
+            if (!vis[it]) {
+                topoSortHelper(it, vis, st, adj);
+            }
+        }
+        st.push(node);
+    }
+    public static int dijkstra(ArrayList<ArrayList<Pair>> adj, int nodes, int src, int dest) {
+        PriorityQueue<Pair> pq = new PriorityQueue<>(Comparator.comparingInt(a -> a.wt));
+        int[] dist = new int[nodes];
+        Arrays.fill(dist, Integer.MAX_VALUE);
+        dist[src] = 0;
+        pq.add(new Pair(src, 0));
+
+        while (!pq.isEmpty()) {
+            Pair curr = pq.poll();
+            int u = curr.dest;
+
+            if (u == dest) {
+                return dist[u];
+            }
+
+            for (Pair neighbor : adj.get(u)) {
+                int v = neighbor.dest;
+                int weight = neighbor.wt;
+
+                if (dist[u] + weight < dist[v]) {
+                    dist[v] = dist[u] + weight;
+                    pq.add(new Pair(v, dist[v]));
+                }
+            }
+        }
+        return dist[dest] == Integer.MAX_VALUE ? -1 : dist[dest];
+    }
+
+    public static int bellmanFord(ArrayList<ArrayList<Pair>> adj, int nodes, int src, int dest) {
+        int[] dist = new int[nodes];
+        Arrays.fill(dist, Integer.MAX_VALUE);
+        dist[src] = 0;
+
+        for (int i = 0; i < nodes - 1; i++) {
+            for (int u = 0; u < nodes; u++) {
+                for (Pair neighbor : adj.get(u)) {
+                    int v = neighbor.dest;
+                    int weight = neighbor.wt;
+
+                    if (dist[u] != Integer.MAX_VALUE && dist[u] + weight < dist[v]) {
+                        dist[v] = dist[u] + weight;
+                    }
+                }
+            }
+        }
+
+        for (int u = 0; u < nodes; u++) {
+            for (Pair neighbor : adj.get(u)) {
+                int v = neighbor.dest;
+                int weight = neighbor.wt;
+
+                if (dist[u] != Integer.MAX_VALUE && dist[u] + weight < dist[v]) {
+                    System.out.println("Graph contains negative weight cycle");
+                    return -1;
+                }
+            }
+        }
+
+        return dist[dest] == Integer.MAX_VALUE ? -1 : dist[dest];
+    }
+
+    public static void dfsHelper(ArrayList<ArrayList<Pair>> adj, boolean[] vis, ArrayList<Integer> ans , int node) {
+        vis[node] = true;
+        ans.add(node);
+        for(Pair curr : adj.get(node)) {
+            int neigh = curr.dest;
+            if(!vis[neigh]) {
+                dfsHelper(adj, vis, ans, neigh);
+            }
+        }
+    }
+    
+    public static void bfsHelper(ArrayList<ArrayList<Pair>> adj, boolean[] vis, ArrayList<Integer> ans , int source) {
+        Queue<Integer> q = new LinkedList<>();
+        q.add(source);
+        vis[source] = true;
+        while(!q.isEmpty()) {
+            int node = q.remove();
+            ans.add(node);
+            for(int i=0;i<adj.get(node).size();i++) {
+                Pair curr = adj.get(node).get(i);
+                int neigh = curr.dest;
+                if(!vis[neigh]) {
+                    vis[neigh] = true;
+                    q.add(neigh);
+                }
+            }
+        }
+    }
+
+    public static boolean isCycleHelper1(ArrayList<ArrayList<Pair>> adj, boolean[] vis, int node) {
+        //  UNDIRECTED
+        vis[node] = true;
+        Queue<Pair> q = new LinkedList<>();
+        q.add(new Pair(node, -1));
+
+        while(!q.isEmpty()) {
+            int curr = q.peek().dest;
+            int parent = q.peek().wt;
+            q.remove();
+
+            for(Pair neigh : adj.get(curr)) {
+                int adjN = neigh.dest;
+                if(!vis[adjN]) {
+                    vis[adjN] = true;
+                    q.add(new Pair(adjN,curr));
+                }
+                else if(adjN != parent) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public static boolean isCycleHelper2(ArrayList<ArrayList<Pair>> adj, boolean[] vis,  boolean[] path, int node) {
+        vis[node] = true;
+        path[node] = true;
+
+        for(Pair curr : adj.get(node)) {
+            int neigh = curr.dest;
+            if(!vis[neigh]) {
+                if(isCycleHelper2(adj, vis, path, neigh)) {
+                    return true;
+                }
+            }
+            else if(path[neigh]) {
+                return true;
+            }
+        }
+        path[node] = false;
+        return false;
     }
 }
