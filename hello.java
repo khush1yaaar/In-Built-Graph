@@ -47,6 +47,6 @@ public class hello {
         edges.add(new Edge(5, 6));
         Graph graph4 = new Graph(edges2, 7, true);
 
-        System.out.println(graph.isCycle(false));
+        System.out.println(graph4.isCycle(false));
     }
 }
