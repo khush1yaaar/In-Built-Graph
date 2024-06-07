@@ -1,6 +1,6 @@
 import java.util.*;
 public class Graph {
-        ArrayList<ArrayList<Integer>> adj;
+        ArrayList<ArrayList<Pair>> adj;
         int[][] matrix;
         int nodes;
         boolean[] vis;
@@ -21,11 +21,13 @@ public class Graph {
                 createDirectedGraph(edges);
             }
         }
+        
         public void createDirectedGraph(ArrayList<Edge> edges) { // CREATE DIRECTED GRAPH
             for(Edge e : edges) {
                 int u = e.u;
                 int v = e.v;
-                adj.get(u).add(v);
+                int wt = e.wt;
+                adj.get(u).add(new Pair(v, wt));
             }
             nodes = adj.size();
         }
@@ -33,8 +35,9 @@ public class Graph {
             for(Edge e : edges) {
                 int u = e.u;
                 int v = e.v;
-                adj.get(u).add(v);
-                adj.get(v).add(u);
+                int wt = e.wt;
+                adj.get(u).add(new Pair(v, wt));
+                adj.get(v).add(new Pair(u, wt));
             }
             nodes = adj.size();
         }
@@ -45,9 +48,22 @@ public class Graph {
                 }
                 nodes = Math.max(u, v) + 1; 
             }
-            this.adj.get(u).add(v);
+            this.adj.get(u).add(new Pair(v, 1));
             if(isUndirected) {
-                this.adj.get(v).add(u);
+                this.adj.get(v).add(new Pair(u, 1));
+            }
+            nodes = this.adj.size();
+        }
+        public void add(int u, int v, int wt, boolean isUndirected) {
+            if (u >= nodes || v >= nodes) { 
+                for (int i = nodes; i <= Math.max(u, v); i++) {
+                    adj.add(new ArrayList<>());
+                }
+                nodes = Math.max(u, v) + 1; 
+            }
+            this.adj.get(u).add(new Pair(v,wt));
+            if(isUndirected) {
+                this.adj.get(v).add(new Pair(u,wt));
             }
             nodes = this.adj.size();
         }
@@ -58,13 +74,12 @@ public class Graph {
             }
             nodes = this.adj.size();
         }
-        public int shortestPath(int src, int dest, boolean isNegativeWeighted) {
-            // if(isNegativeWeighted) {
-            //     return bellManFord();
-            // }
-            // else {
-            //     return dijkstras();
-            // }
+        public int shortestPath(int src, int dest, boolean isNegativeWeighted, boolean isUndirected) {
+            if (isNegativeWeighted && !isUndirected) {
+                //return Helper.bellmanFord(adj, nodes, src, dest);
+            } else {
+                //return Helper.dijkstra(adj, nodes, src, dest);
+            }
             return -1;
         }
 
@@ -176,42 +191,90 @@ public class Graph {
         // graph.add(0, 2, false);
         // System.out.println(graph.adj.get(0).get(0));
     }
-    public static class Edge {
-        int u;
-        int v;
+
+    public static class Pair {
+        int dest;
         int wt = 1;
-        public Edge(int u, int v) {
-            this.u = u;
-            this.v = v;
-        }
-        public Edge(int u, int v, int wt) {
-            this.u = u;
-            this.v = v;
+
+        Pair(int dest, int wt) {
+            this.dest = dest;
             this.wt = wt;
         }
     }
-
-    public static class Pair {
-        int first;
-        int second;
-
-        Pair(int first, int second) {
-            this.first = first;
-            this.second = second;
-        }
-    }
     public static class Helper {
-        public static void dfsHelper(ArrayList<ArrayList<Integer>> adj, boolean[] vis, ArrayList<Integer> ans , int node) {
+        public static int dijkstra(ArrayList<ArrayList<Pair>> adj, int nodes, int src, int dest) {
+            PriorityQueue<Pair> pq = new PriorityQueue<>(Comparator.comparingInt(a -> a.wt));
+            int[] dist = new int[nodes];
+            Arrays.fill(dist, Integer.MAX_VALUE);
+            dist[src] = 0;
+            pq.add(new Pair(src, 0));
+
+            while (!pq.isEmpty()) {
+                Pair curr = pq.poll();
+                int u = curr.dest;
+
+                if (u == dest) {
+                    return dist[u];
+                }
+
+                for (Pair neighbor : adj.get(u)) {
+                    int v = neighbor.dest;
+                    int weight = neighbor.wt;
+
+                    if (dist[u] + weight < dist[v]) {
+                        dist[v] = dist[u] + weight;
+                        pq.add(new Pair(v, dist[v]));
+                    }
+                }
+            }
+            return dist[dest] == Integer.MAX_VALUE ? -1 : dist[dest];
+        }
+
+        public static int bellmanFord(ArrayList<ArrayList<Pair>> adj, int nodes, int src, int dest) {
+            int[] dist = new int[nodes];
+            Arrays.fill(dist, Integer.MAX_VALUE);
+            dist[src] = 0;
+
+            for (int i = 0; i < nodes - 1; i++) {
+                for (int u = 0; u < nodes; u++) {
+                    for (Pair neighbor : adj.get(u)) {
+                        int v = neighbor.dest;
+                        int weight = neighbor.wt;
+
+                        if (dist[u] != Integer.MAX_VALUE && dist[u] + weight < dist[v]) {
+                            dist[v] = dist[u] + weight;
+                        }
+                    }
+                }
+            }
+
+            for (int u = 0; u < nodes; u++) {
+                for (Pair neighbor : adj.get(u)) {
+                    int v = neighbor.dest;
+                    int weight = neighbor.wt;
+
+                    if (dist[u] != Integer.MAX_VALUE && dist[u] + weight < dist[v]) {
+                        System.out.println("Graph contains negative weight cycle");
+                        return -1;
+                    }
+                }
+            }
+
+            return dist[dest] == Integer.MAX_VALUE ? -1 : dist[dest];
+        }
+
+        public static void dfsHelper(ArrayList<ArrayList<Pair>> adj, boolean[] vis, ArrayList<Integer> ans , int node) {
             vis[node] = true;
             ans.add(node);
-            for(int curr : adj.get(node)) {
-                if(!vis[curr]) {
-                    dfsHelper(adj, vis, ans, curr);
+            for(Pair curr : adj.get(node)) {
+                int neigh = curr.dest;
+                if(!vis[neigh]) {
+                    dfsHelper(adj, vis, ans, neigh);
                 }
             }
         }
-
-        public static void bfsHelper(ArrayList<ArrayList<Integer>> adj, boolean[] vis, ArrayList<Integer> ans , int source) {
+        
+        public static void bfsHelper(ArrayList<ArrayList<Pair>> adj, boolean[] vis, ArrayList<Integer> ans , int source) {
             Queue<Integer> q = new LinkedList<>();
             q.add(source);
             vis[source] = true;
@@ -219,32 +282,34 @@ public class Graph {
                 int node = q.remove();
                 ans.add(node);
                 for(int i=0;i<adj.get(node).size();i++) {
-                    int curr = adj.get(node).get(i);
-                    if(!vis[curr]) {
-                        vis[curr] = true;
-                        q.add(curr);
+                    Pair curr = adj.get(node).get(i);
+                    int neigh = curr.dest;
+                    if(!vis[neigh]) {
+                        vis[neigh] = true;
+                        q.add(neigh);
                     }
                 }
             }
         }
 
-        public static boolean isCycleHelper1(ArrayList<ArrayList<Integer>> adj, boolean[] vis, int node) {
+        public static boolean isCycleHelper1(ArrayList<ArrayList<Pair>> adj, boolean[] vis, int node) {
             //  UNDIRECTED
             vis[node] = true;
             Queue<Pair> q = new LinkedList<>();
             q.add(new Pair(node, -1));
 
             while(!q.isEmpty()) {
-                int curr = q.peek().first;
-                int parent = q.peek().second;
+                int curr = q.peek().dest;
+                int parent = q.peek().wt;
                 q.remove();
 
-                for(int neigh : adj.get(curr)) {
-                    if(!vis[neigh]) {
-                        vis[neigh] = true;
-                        q.add(new Pair(neigh,curr));
+                for(Pair neigh : adj.get(curr)) {
+                    int adjN = neigh.dest;
+                    if(!vis[adjN]) {
+                        vis[adjN] = true;
+                        q.add(new Pair(adjN,curr));
                     }
-                    else if(neigh != parent) {
+                    else if(adjN != parent) {
                         return true;
                     }
                 }
@@ -252,22 +317,37 @@ public class Graph {
             return false;
         }
 
-        public static boolean isCycleHelper2(ArrayList<ArrayList<Integer>> adj, boolean[] vis,  boolean[] path, int node) {
+        public static boolean isCycleHelper2(ArrayList<ArrayList<Pair>> adj, boolean[] vis,  boolean[] path, int node) {
             vis[node] = true;
             path[node] = true;
 
-            for(int curr : adj.get(node)) {
-                if(!vis[curr]) {
-                    if(isCycleHelper2(adj, vis, path, curr)) {
+            for(Pair curr : adj.get(node)) {
+                int neigh = curr.dest;
+                if(!vis[neigh]) {
+                    if(isCycleHelper2(adj, vis, path, neigh)) {
                         return true;
                     }
                 }
-                else if(path[curr]) {
+                else if(path[neigh]) {
                     return true;
                 }
             }
             path[node] = false;
             return false;
         }
+    }
+}
+class Edge {
+    int u;
+    int v;
+    int wt = 1;
+    public Edge(int u, int v) {
+        this.u = u;
+        this.v = v;
+    }
+    public Edge(int u, int v, int wt) {
+        this.u = u;
+        this.v = v;
+        this.wt = wt;
     }
 }
