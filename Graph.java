@@ -3,7 +3,6 @@ public class Graph {
         ArrayList<ArrayList<Pair>> adj;
         int[][] matrix;
         int nodes;
-        boolean[] vis;
         public Graph() {
             this.adj = new ArrayList<>();
             this.nodes = 0;
@@ -85,7 +84,7 @@ public class Graph {
 
         public boolean isCycle(boolean isUndirected) { // CHECK IF THERE EXISTS A CYCLE
             boolean[] path = new boolean[nodes];
-            vis = new boolean[nodes];
+            boolean[] vis = new boolean[nodes];
             if(isUndirected) {
                 for(int i=0;i<vis.length;i++) {
                     if(!vis[i]) {
@@ -107,13 +106,9 @@ public class Graph {
             return false;
         }
 
-        public boolean DAG() { // CHECK IF IT'S A DIRECTED ACYCLIC GRAPH
-            return false;
-        }
-
         public ArrayList<Integer> dfs(int source) { // RETURNS DFS TRAVERSAL
             ArrayList<Integer> ans = new ArrayList<>();
-            this.vis = new boolean[nodes];
+            boolean[] vis = new boolean[nodes];
             for(int i=0;i<vis.length;i++) {
                 if(!vis[i]) {
                     Helper.dfsHelper(adj,vis,ans,i);
@@ -124,7 +119,7 @@ public class Graph {
 
         public ArrayList<Integer> bfs(int source) { // RETURNS BFS TRAVERSAL
             ArrayList<Integer> ans = new ArrayList<>();
-            this.vis = new boolean[nodes];
+            boolean[] vis = new boolean[nodes];
             for (int i = 0; i < vis.length; i++) {
                 vis[i] = false;
             }
@@ -142,7 +137,7 @@ public class Graph {
                 return new ArrayList<>();
             }
             ArrayList<Integer> ans = new ArrayList<>();
-            this.vis = new boolean[nodes];
+            boolean[] vis = new boolean[nodes];
             Stack<Integer> st = new Stack<Integer>();
             for (int i = 0; i < vis.length; i++) {
                 if (!vis[i]) {
@@ -172,7 +167,7 @@ public class Graph {
         public int components() { // RETURNS NUMBER OF COMPONENTS IN THE GRAPH
             ArrayList<Integer> temp = new ArrayList<>();
             int ans = 0;
-            this.vis = new boolean[nodes];
+            boolean[] vis = new boolean[nodes];
             for(int i=0;i<vis.length;i++) {
                 if(!vis[i]) {
                     ans++;
