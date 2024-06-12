@@ -149,12 +149,20 @@ public class Graph {
             }
             return ans;
         }
+        public List<List<Integer>> bridges() {
+            int[] vis = new int[nodes];
+        int[] tin = new int[nodes];
+        int[] low = new int[nodes];
+        List<List<Integer>> bridges = new ArrayList<>();
+        Helper.dfs(0, -1, vis, adj, tin, low, bridges);
+            return bridges;
+        }
 
         public boolean find(int x) { // CHECKS IF THE NODE EXISTS OR NOT
             return false;
         }
-        public ArrayList<ArrayList<Integer>> toAdjacencyList(int[][] matrix) { // CONVERTS TO ADJACENCY LIST
-            ArrayList<ArrayList<Integer>> ans = new ArrayList<>();
+        public ArrayList<ArrayList<Pair>> toAdjacencyList(int[][] matrix) { // CONVERTS TO ADJACENCY LIST
+            ArrayList<ArrayList<Pair>> ans = new ArrayList<>();
 
             return ans;
         }
@@ -227,6 +235,27 @@ class Pair {
 }
 
 class Helper {
+    public static int timer = 1;
+    public static void dfs(int node, int parent, int[] vis,ArrayList<ArrayList<Pair>> adj, int tin[], int low[],
+                     List<List<Integer>> bridges) {
+        vis[node] = 1;
+        tin[node] = low[node] = timer;
+        timer++;
+        for (Pair pair: adj.get(node)) {
+            int it = pair.dest;
+            if (it == parent) continue;
+            if (vis[it] == 0) {
+                dfs(it, node, vis, adj, tin, low, bridges);
+                low[node] = Math.min(low[node], low[it]);
+                // node --- it
+                if (low[it] > tin[node]) {
+                    bridges.add(Arrays.asList(it, node));
+                }
+            } else {
+                low[node] = Math.min(low[node], low[it]);
+            }
+        }
+    }
     public static void topoSortHelper(int node, boolean vis[], Stack<Integer> st,
         ArrayList<ArrayList<Pair>> adj) {
         vis[node] = true;
@@ -370,5 +399,40 @@ class Helper {
         }
         path[node] = false;
         return false;
+    }
+}
+
+class DisjointSet {
+    List<Integer> rank = new ArrayList<>();
+    List<Integer> parent = new ArrayList<>();
+    public DisjointSet(int n) {
+        for (int i = 0; i <= n; i++) {
+            rank.add(0);
+            parent.add(i);
+        }
+    }
+
+    public int find(int node) {
+        if (node == parent.get(node)) {
+            return node;
+        }
+        int ulp = find(parent.get(node));
+        parent.set(node, ulp);
+        return parent.get(node);
+    }
+
+    public void union(int u, int v) {
+        int ulp_u = find(u);
+        int ulp_v = find(v);
+        if (ulp_u == ulp_v) return;
+        if (rank.get(ulp_u) < rank.get(ulp_v)) {
+            parent.set(ulp_u, ulp_v);
+        } else if (rank.get(ulp_v) < rank.get(ulp_u)) {
+            parent.set(ulp_v, ulp_u);
+        } else {
+            parent.set(ulp_v, ulp_u);
+            int rankU = rank.get(ulp_u);
+            rank.set(ulp_u, rankU + 1);
+        }
     }
 }

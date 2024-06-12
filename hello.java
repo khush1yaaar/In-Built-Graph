@@ -42,10 +42,12 @@ public class hello {
         edges.add(new Edge(3, 5));
         edges.add(new Edge(4, 5));
         edges.add(new Edge(5, 6));
-        Graph graph = new Graph(edges, 7, false);
+        Graph graph = new Graph(edges, 7, true);
 
         
 
         System.out.println(graph.isCycle(false));
+        System.out.println(graph.shortestPath(0, 6, false, false));
+        System.out.println(graph.bridges());
     }
 }
