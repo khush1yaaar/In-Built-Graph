@@ -136,6 +136,68 @@ public class Main {
     }
 }
 ```
+## Disjoint Set (Union-Find) Data Structure
+
+### Overview
+The library includes an efficient implementation of the Disjoint Set data structure, also known as Union-Find. This data structure is particularly useful in graph algorithms for handling dynamic connectivity, such as finding connected components and detecting cycles in an undirected graph.
+
+### Features
+- **Union by Rank**: Optimizes the union operation by attaching the smaller tree under the root of the deeper tree.
+- **Path Compression**: Flattens the structure of the tree whenever `findUPar` is called, ensuring fast subsequent operations.
+- **Initialization**: Automatically sets up parent and rank arrays.
+
+### Usage
+1. **Initialization**:
+   ```java
+   DisjointSet ds = new DisjointSet(n);
+   ```
+   - `n` is the number of elements.
+
+2. **Find Operation**:
+   ```java
+   int root = ds.findUPar(x);
+   ```
+   - Returns the representative (or root) of the set containing `x`.
+
+3. **Union Operation**:
+   ```java
+   ds.unionByRank(x, y);
+   ```
+   - Merges the sets containing `x` and `y`.
+
+### Example
+```java
+public class Main {
+    public static void main (String[] args) {
+        DisjointSet ds = new DisjointSet(7);
+        ds.unionByRank(1, 2);
+        ds.unionByRank(2, 3);
+        ds.unionByRank(4, 5);
+        ds.unionByRank(6, 7);
+        ds.unionByRank(5, 6);
+
+        // Check if 3 and 7 are in the same set
+        if (ds.findUPar(3) == ds.findUPar(7)) {
+            System.out.println("Same");
+        } else {
+            System.out.println("Not Same");
+        }
+
+        ds.unionByRank(3, 7);
+        if (ds.findUPar(3) == ds.findUPar(7)) {
+            System.out.println("Same");
+        } else {
+            System.out.println("Not Same");
+        }
+    }
+}
+```
+
+### Methods
+
+- **`DisjointSet(int n)`**: Initializes the Disjoint Set with `n` elements.
+- **`int findUPar(int node)`**: Finds and returns the ultimate parent (or representative) of the set containing `node`. Implements path compression for efficiency.
+- **`void unionByRank(int u, int v)`**: Unites the sets containing `u` and `v` using rank to keep the tree shallow.
 
 ## Contributing
 Feel free to fork the repository, make improvements, and submit a pull request.
